@@ -913,6 +913,16 @@ class WhooshSearchQuery(BaseSearchQuery):
         #     # convert a valid list/tuple to string. Defer handling it
         #     # until later...
         #     value = self.backend._from_python(value)
+        
+    def get_count(self):
+        """ Ugly fix to avoid incorrect count when filtering by model """
+        sqs = self._clone()
+        sqs.start_offset = 0
+        sqs.end_offset = None
+        _count = 0
+        for result in sqs.get_results():
+            _count += 1
+        return _count
 
 
 class WhooshEngine(BaseEngine):
